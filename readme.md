@@ -7,10 +7,10 @@ project-root/
 │
 ├── src/
 │   ├── controllers/
-│   │   └── authController.js
+│   │   └── auth.controller.js
 │   │
 │   ├── models/
-│   │   └── user.js
+│   │   └── user.model.js
 │   │
 │   ├── routes/
 │   │   └── authRoutes.js
