@@ -4,10 +4,13 @@ import { connectToDB } from './src/config/db.config.js';
 import passport from './src/config/passport.config.js';
 import session from 'express-session';
 import flash from 'connect-flash';
+import dotenv from 'dotenv';
+dotenv.config();
+
 // app
 const app = express();
-
 //Middlewares
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');

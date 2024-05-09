@@ -8,6 +8,14 @@
   </head>
   <body>
     <h1>Welcome to the Home Page</h1>
+    <!-- Flash message -->
+    <% if (typeof messages !== 'undefined' && messages.length > 0) { %>
+    <div class="flash-message">
+      <% messages.forEach(function(message) { %>
+      <p><%= message %></p>
+      <% }) %>
+    </div>
+    <% } %>
     <button onclick="signOut()">Sign Out</button>
     <button onclick="resetPassword()">Reset Password</button>
     <script>
@@ -33,8 +41,7 @@
       }
 
       function resetPassword() {
-        // Add reset password functionality here
-        // Example: Redirect to reset password route
+        //Redirect to reset password route
         window.location.href = '/resetpassword';
       }
     </script>

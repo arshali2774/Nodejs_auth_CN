@@ -1,6 +1,9 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import UserModel from '../models/user.model.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 //
 passport.use(
@@ -19,6 +22,33 @@ passport.use(
         return done(null, user);
       } catch (error) {
         return done(error);
+      }
+    }
+  )
+);
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: 'http://localhost:3000/auth/google/callback',
+    },
+    async (accessToken, refreshToken, profile, cb) => {
+      try {
+        let user = await UserModel.findOne({ googleId: profile.id });
+
+        if (!user) {
+          user = new UserModel({
+            googleId: profile.id,
+            email: profile.emails[0].value,
+            signUpMethod: 'google', // Indicate sign-up method
+            username: profile.emails[0].value,
+          });
+          await user.save();
+        }
+        return cb(null, user);
+      } catch (error) {
+        return cb(error);
       }
     }
   )

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-
+import passportLocalMongoose from 'passport-local-mongoose';
+import findOrCreate from 'mongoose-findorcreate';
 //create user schema
 const userSchema = mongoose.Schema({
   email: {
@@ -18,7 +19,10 @@ const userSchema = mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      // Only require password if sign-up method is email/password
+      return this.signUpMethod === 'email';
+    },
     minlength: [8, 'Password must be at least 8 characters long'],
     validate: {
       validator: function (value) {
@@ -31,14 +35,33 @@ const userSchema = mongoose.Schema({
         `Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character.`,
     },
   },
+  // Other fields
+  signUpMethod: {
+    type: String,
+    enum: ['email', 'google'], // Indicate the sign-up method used
+    default: 'email',
+  },
+  googleId: {
+    type: String,
+    unique: true,
+  },
+  username: {
+    type: String,
+    unique: true,
+  },
 });
 
 //using mongoose middlewares we can hash password before saving
 userSchema.pre('save', async function (next) {
   try {
-    const salt = await bcrypt.genSalt(10);
-    //not using arrow function, because then we cannot access "this" keyword.
-    this.password = await bcrypt.hash(this.password, salt);
+    // Check if the password field is present and not empty
+    if (this.isModified('password') || this.isNew) {
+      const salt = await bcrypt.genSalt(10);
+      // Hash the password only if it exists
+      if (this.password) {
+        this.password = await bcrypt.hash(this.password, salt);
+      }
+    }
     next();
   } catch (error) {
     next(error);
@@ -53,6 +76,9 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
     throw new Error(error);
   }
 };
+
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', userSchema);
 

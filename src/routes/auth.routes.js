@@ -4,12 +4,14 @@ import {
   getResetPasswordPage,
   getSignInPage,
   getSignUpPage,
+  googleAuth,
+  googleAuthCallback,
   loginUser,
   registerUser,
+  resetPassword,
   signOutUser,
 } from '../controllers/auth.controller.js';
 import { isAuthenticated } from '../middlewares/isAuthenticated.js';
-
 const authRouter = express.Router();
 
 // GET route to render the sign-up form
@@ -33,5 +35,12 @@ authRouter.post('/signout', signOutUser);
 
 // Reset password route
 authRouter.get('/resetpassword', isAuthenticated, getResetPasswordPage);
+
+// change user password
+authRouter.post('/resetpassword', isAuthenticated, resetPassword);
+
+// Routes for Google authentication
+authRouter.get('/auth/google', googleAuth);
+authRouter.get('/auth/google/callback', googleAuthCallback);
 
 export default authRouter;
