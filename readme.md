@@ -29,8 +29,15 @@ This authentication system provides a robust foundation for implementing user au
 project-root/
 │
 ├── src/
+│   ├── config/
+│   │   └── db.config.js
+│   │   └── passport.config.js
+│   │
 │   ├── controllers/
 │   │   └── auth.controller.js
+│   │
+│   ├── middlewares/
+│   │   └── isAuthenticated.js
 │   │
 │   ├── models/
 │   │   └── user.model.js
@@ -39,19 +46,18 @@ project-root/
 │   │   └── authRoutes.js
 │   │
 │   └── views/
-│       ├── signup.ejs
-│       ├── signin.ejs
-│       ├── forgotPassword.ejs
+│       ├── home.ejs
+│       ├── index.ejs
+│       ├── layout.ejs
 │       ├── resetPassword.ejs
-│       └── home.ejs
+│       ├── signin.ejs
+│       └── signup.ejs
 │
 ├── public/
 │   └── css/
 │       └── style.css
-│   └── js/
-│       └── main.js
-│   └── images/
 │
+├── .env
 ├── app.js
 ├── package.json
 └── README.md
