@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getHomePage,
+  getIndexPage,
   getResetPasswordPage,
   getSignInPage,
   getSignUpPage,
@@ -13,6 +14,9 @@ import {
 } from '../controllers/auth.controller.js';
 import { isAuthenticated } from '../middlewares/isAuthenticated.js';
 const authRouter = express.Router();
+
+// GET route to render the index page
+authRouter.get('/', getIndexPage);
 
 // GET route to render the sign-up form
 authRouter.get('/signup', getSignUpPage);

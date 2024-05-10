@@ -32,7 +32,7 @@ const userSchema = mongoose.Schema({
         );
       },
       message: (props) =>
-        `Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character.`,
+        `Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.`,
     },
   },
   // Other fields
@@ -43,7 +43,10 @@ const userSchema = mongoose.Schema({
   },
   googleId: {
     type: String,
-    unique: true,
+    required: function () {
+      // Only require password if sign-up method is email/password
+      return this.signUpMethod === 'google';
+    },
   },
   username: {
     type: String,

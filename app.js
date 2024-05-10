@@ -5,6 +5,8 @@ import passport from './src/config/passport.config.js';
 import session from 'express-session';
 import flash from 'connect-flash';
 import dotenv from 'dotenv';
+import expressEjsLayouts from 'express-ejs-layouts';
+import path from 'path';
 dotenv.config();
 
 // app
@@ -14,7 +16,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
-app.set('views', './src/views');
+app.set('views', path.join(path.resolve(), 'src', 'views'));
+app.use(expressEjsLayouts);
 // Use express-session middleware
 app.use(
   session({

@@ -1,20 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign In</title>
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
-  <body>
-    <h1>Sign In</h1>
-    <% if (errorMessage) { %>
-    <p><%= errorMessage %></p>
-    <% } %>
-    <form action="/signin" method="POST">
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <button type="submit">Sign In</button>
-    </form>
-  </body>
-</html>
+<!-- Flash message -->
+<% if (messageError && messageError.length>0) { %>
+<div id="notification">
+  <p><i class="fa-solid fa-circle-xmark"></i></p>
+  <p><%= messageError %></p>
+</div>
+<% } %>
+<div id="signin_display" class="default_container">
+  <h1>Sign In</h1>
+
+  <div class="fingerprint_icon">
+    <i class="fa-solid fa-fingerprint"></i>
+  </div>
+  <form action="/signin" method="POST" class="form_styles" autocomplete="off">
+    <input
+      type="email"
+      name="email"
+      placeholder="Email"
+      required
+      autocomplete="new-user-email"
+    />
+    <input
+      type="password"
+      name="password"
+      placeholder="Password"
+      required
+      autocomplete="new-password"
+    />
+    <button type="submit"><i class="fa-solid fa-user-lock"></i>Sign In</button>
+  </form>
+</div>

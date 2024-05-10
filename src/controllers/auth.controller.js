@@ -1,26 +1,49 @@
 import UserModel from '../models/user.model.js';
 import passport from '../config/passport.config.js';
+
+// controller to render the index page
+export const getIndexPage = (req, res) => {
+  const messageSuccess = req.flash('success');
+  req.flash('success', null);
+  res.render('index', { messageSuccess });
+};
+
 // controller to render the signup page
 export const getSignUpPage = (req, res) => {
-  res.render('signup');
+  const messageError = req.flash('error');
+  req.flash('error', null);
+  res.render('signup', { messageError });
 };
 
 //controller to add user in database and send response
 export const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, cnfPassword } = req.body;
   try {
-    const user = await UserModel.create({ email, password });
-    res.send('Sign up successfull');
+    if (password !== cnfPassword) {
+      req.flash('error', 'Passwords do not match.');
+      return res.redirect('/signup');
+    }
+    const user = await UserModel.create({
+      email,
+      password,
+      username: email,
+      googleId: email,
+    });
+    req.flash('success', 'User signed up successfully!');
+    res.redirect('/');
   } catch (error) {
-    console.log(error);
-    res.status(500).send('Error signing up');
+    const messageArr = error.message.split(':');
+    const message = messageArr[messageArr.length - 1].trim();
+    req.flash('error', message);
+    res.redirect('/signup');
   }
 };
 
 //controller to render the signin page
 export const getSignInPage = (req, res) => {
-  const errorMessage = req.flash('error');
-  res.render('signin', { errorMessage });
+  const messageError = req.flash('error');
+  req.flash('error', null);
+  res.render('signin', { messageError });
 };
 
 // Controller middleware to handle sign-in form submissions
@@ -34,6 +57,7 @@ export const loginUser = passport.authenticate('local', {
 export const getHomePage = (req, res) => {
   // Pass the flash message to the view
   const flashMessage = req.flash('success');
+  req.flash('success', null);
   res.render('home', { messages: flashMessage });
 };
 
@@ -46,14 +70,16 @@ export const signOutUser = (req, res) => {
       res.status(500).send('Error signing out');
     } else {
       // Redirect the user to the sign-in page after successful sign-out
-      res.redirect('/signin');
+      res.redirect('/');
     }
   });
 };
 
 // Controller middleware to render the reset password page
 export const getResetPasswordPage = (req, res) => {
-  res.render('resetpassword');
+  const messageError = req.flash('error');
+  req.flash('error', null);
+  res.render('resetpassword', { messageError });
 };
 
 // Controller middleware to handle form submission for resetting the password
@@ -66,13 +92,15 @@ export const resetPassword = async (req, res) => {
     const user = await UserModel.findById(userId);
     if (!user) {
       // Handle case where user is not found
-      return res.status(404).send('User not found');
+      req.flash('error', 'User not found');
+      return res.redirect('/resetpassword');
     }
 
     // Verify that the provided email matches the authenticated user's email
     if (user.email !== email) {
       // Handle case where email does not match
-      return res.status(403).send('Email does not match authenticated user');
+      req.flash('error', 'Email does not match authenticated user');
+      return res.redirect('/resetpassword');
     }
 
     // Update the user's password in the database with the hashed password
@@ -83,8 +111,10 @@ export const resetPassword = async (req, res) => {
     req.flash('success', 'Password reset successfully');
     res.redirect('/home');
   } catch (error) {
-    console.error('Error resetting password:', error);
-    res.status(500).send('Error resetting password');
+    const messageArr = error.message.split(':');
+    const message = messageArr[messageArr.length - 1].trim();
+    req.flash('error', message);
+    return res.redirect('/resetpassword');
   }
 };
 
@@ -101,6 +131,7 @@ export const googleAuthCallback = (req, res, next) => {
     }
     if (!user) {
       // Handle authentication failure by redirecting to the signup page
+      req.flash('error', 'Google Sign In Failed');
       return res.redirect('/signup');
     }
     // Log in the user

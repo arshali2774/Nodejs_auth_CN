@@ -19,6 +19,7 @@ passport.use(
         if (!isMatch) {
           return done(null, false, { message: 'Incorrect credentials' });
         }
+
         return done(null, user);
       } catch (error) {
         return done(error);
