@@ -5,7 +5,7 @@ import UserModel from '../models/user.model.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-//
+//our signin functionality
 passport.use(
   new LocalStrategy(
     { usernameField: 'email' },
@@ -27,6 +27,7 @@ passport.use(
     }
   )
 );
+//google signin functionality
 passport.use(
   new GoogleStrategy(
     {

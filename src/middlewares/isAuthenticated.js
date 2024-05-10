@@ -5,6 +5,7 @@ export const isAuthenticated = (req, res, next) => {
     return next();
   } else {
     // If user is not authenticated, redirect to sign-in page
+    req.flash('error', 'User Session expired');
     res.redirect('/signin');
   }
 };
